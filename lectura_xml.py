@@ -37,12 +37,16 @@ def lector():
     # {"114":"172.24.2.214"},{"115":"172.24.2.215"},{"116":"172.24.2.216"},
     # {"117":"172.24.2.217"}]
     
-    puesto_conexion=[{"106":"172.18.2.24"},{"113":"172.24.2.213"}]
+    puesto_conexion=[{"106":"172.18.2.24"},{"107":"172.19.2.107"}]
 
     for i in puesto_conexion:
-        ruta="C:/Users/fcores/Desktop/reporte_afip/" + i.keys() + ".zip"
+        for p in i.keys():
+            puesto=p
+        for h in i.values():
+            ip=h
+        ruta="C:/Users/fcores/Desktop/reporte_afip/" + puesto + ".zip"
         headers={"Content-Type":"text/xml"}
-        response = requests.post("http://" + i.values() + "/afip.zip?DESDE=211208&HASTA=211212",auth=("",'9999'),headers=headers)
+        response = requests.post("http://" + ip + "/afip.zip?DESDE=211208&HASTA=211212",auth=("",'9999'),headers=headers)
         print(response.status_code)
         with open(ruta,'wb') as file:
             for entrega in response.iter_content():
