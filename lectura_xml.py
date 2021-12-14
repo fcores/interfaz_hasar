@@ -1,13 +1,13 @@
 import sys
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import shutil
 from PIL import Image
 import os
 import PIL
-from bs4 import BeautifulSoup as bs
+#from bs4 import BeautifulSoup as bs
 import requests
-from bs4 import BeautifulSoup as bs
+#from bs4 import BeautifulSoup as bs
 import requests
 import argparse
 import time
@@ -27,41 +27,26 @@ from xml.etree.ElementTree import parse
 from os import remove
 from bs4 import BeautifulSoup
 
-def lector(entreg,ruta,dia,farmacia):
-    ruta="U:/Farmacias/DOKA_TICKETS_COBERTURA_PARCIAL/2021"
-    rutahtml=ruta+"/"+str(entreg)+".html"
-    if farmacia=="GÜEMES": ######URL GUEMES2#######
-        url="172.19.2.107"
-    elif farmacia=="PUEYRREDÓN": ######URL PUEYRREDON2#######
-        url="172.18.2.24"
-        
-    headers={"Content-Type":"text/xml"}
-    response = requests.get("http://" + url + "/verdocs.html?FECHA=" + str(dia) + "&VER=Ver",auth=("",'9999'))
-    soup = BeautifulSoup(response.text, "xml")
-    etiquetas=soup.findAll("td",class_="RowRight")
-    id=etiquetas[0].text
-    r="no_descargado"
+def lector():
+    
+    # puesto_conexion=[{"102":"172.18.2.102"},{"103","172.18.2.103"},
+    # {"104":"172.18.2.104"},{"105":"172.18.2.105"},{"106":"172.18.2.24"},
+    # {"107":"172.19.2.107"},{"101":"192.168.4.101"},{"108":"172.19.2.108"},
+    # {"120":"172.19.2.120"},{"109":"172.24.2.209"},{"110":"172.24.2.210"},
+    # {"111":"172.24.2.211"},{"112":"172.24.2.212"},{"113":"172.24.2.213"},
+    # {"114":"172.24.2.214"},{"115":"172.24.2.215"},{"116":"172.24.2.216"},
+    # {"117":"172.24.2.217"}]
+    
+    puesto_conexion=[{"106":"172.18.2.24"},{"113":"172.24.2.213"}]
 
-    for i in range(0,200):
-        try:
-            headers={"Content-Type":"text/xml"}
-            response = requests.get("http://" + url + "/documento.xml?ZETA=" + str(id) + "&DOCID=" + str(i),auth=("",'9999'))
-            soup = BeautifulSoup(response.text, "xml")
-            etiqueta=soup.findAll("Texto")
-            entrega=str(etiqueta[1].string)
-            if "Receta" in entrega and entrega[8]=="8":
-                if entrega[8:16]==entreg:
-                    response = requests.get("http://" + url + "/verdoc.html?ZETA=" + str(id) + "&DOCID=" + str(i),auth=("",'9999'))
-                    with open(rutahtml,'wb') as file:
-                        for entrega in response.iter_content():
-                            file.write(entrega)
-                        r="descargado"
-                    break
-                else:
-                    continue
-            else:
-                continue
-        except: 
-            continue
-    return r
+    for i in puesto_conexion:
+        ruta="C:/Users/fcores/Desktop/reporte_afip/" + i.keys() + ".zip"
+        headers={"Content-Type":"text/xml"}
+        response = requests.post("http://" + i.values() + "/afip.zip?DESDE=211208&HASTA=211212",auth=("",'9999'),headers=headers)
+        print(response.status_code)
+        with open(ruta,'wb') as file:
+            for entrega in response.iter_content():
+                file.write(entrega)
 
+    
+lector()  
