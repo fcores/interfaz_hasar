@@ -26,8 +26,9 @@ import os
 from xml.etree.ElementTree import parse
 from os import remove
 from bs4 import BeautifulSoup
+from zipfile import ZipFile
 
-def lector():
+def lector(inicio,fin):
     
     # puesto_conexion=[{"102":"172.18.2.102"},{"103","172.18.2.103"},
     # {"104":"172.18.2.104"},{"105":"172.18.2.105"},{"106":"172.18.2.24"},
@@ -44,13 +45,16 @@ def lector():
             puesto=p
         for h in i.values():
             ip=h
+        os.mkdir("C:/Users/fcores/Desktop/reporte_afip/" + puesto )
         ruta="C:/Users/fcores/Desktop/reporte_afip/" + puesto + ".zip"
         headers={"Content-Type":"text/xml"}
-        response = requests.post("http://" + ip + "/afip.zip?DESDE=211208&HASTA=211212",auth=("",'9999'),headers=headers)
+        response = requests.post("http://" + ip + "/afip.zip?DESDE=" + str(inicio) + "&HASTA=" + str(fin),auth=("",'9999'),headers=headers)
         print(response.status_code)
         with open(ruta,'wb') as file:
             for entrega in response.iter_content():
                 file.write(entrega)
+        with ZipFile(ruta, 'r') as zip:
+            zip.extractall("C:/Users/fcores/Desktop/reporte_afip/" + puesto) 
 
     
-lector()  
+lector(211208,211212)  
